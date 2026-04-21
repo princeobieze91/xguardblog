@@ -14,7 +14,7 @@ async function getRecentPosts(): Promise<PostWithAuthor[]> {
   const { data } = await supabase
     .from("posts")
     .select(
-      "*, profiles(id,name,username,avatar_url), categories(id,name,slug,color)",
+      "*, profiles(*), categories(*)",
     )
     .eq("status", "published")
     .order("published_at", { ascending: false })

@@ -18,9 +18,7 @@ async function getPost(slug: string): Promise<PostWithAuthor | null> {
   const supabase = createClient();
   const { data } = await supabase
     .from("posts")
-    .select(
-      "*, profiles(id,name,username,avatar_url), categories(id,name,slug,color)",
-    )
+    .select("*, profiles(*), categories(*)")
     .eq("slug", slug)
     .eq("status", "published")
     .single();
