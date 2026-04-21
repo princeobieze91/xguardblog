@@ -47,7 +47,7 @@ function LoginForm() {
           <h1 className="text-2xl font-bold font-display text-dark-900 dark:text-white">
             Welcome back
           </h1>
-          <p className="text-dark-500 mt-1">Sign in to continue writing</p>
+          <p className="text-dark-500 mt-1">Sign in to continue</p>
         </div>
 
         <div className="card p-8">
@@ -89,15 +89,6 @@ function LoginForm() {
               Sign In
             </Button>
           </form>
-          <p className="text-center text-sm text-dark-500 mt-6">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="text-primary-500 font-semibold hover:underline"
-            >
-              Create one
-            </Link>
-          </p>
         </div>
       </motion.div>
     </div>
