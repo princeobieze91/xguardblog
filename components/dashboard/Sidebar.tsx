@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, LayoutDashboard, FileText, PenSquare, Settings, LogOut } from "lucide-react";
+import { Shield, LayoutDashboard, FileText, PenSquare, Settings, LogOut, Newspaper } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -31,7 +31,10 @@ export default function DashboardSidebar() {
   const navItems = [
     { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
     { icon: FileText,        label: "My Posts", href: "/dashboard/posts" },
-    ...(isAdmin ? [{ icon: PenSquare, label: "Write", href: "/dashboard/posts/new" }] : []),
+    ...(isAdmin ? [
+      { icon: PenSquare, label: "Write", href: "/dashboard/posts/new" },
+      { icon: Newspaper, label: "Articles", href: "/dashboard/articles" }
+    ] : []),
     { icon: Settings,        label: "Settings", href: "/dashboard/settings" },
   ];
 

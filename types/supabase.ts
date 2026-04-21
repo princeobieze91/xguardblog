@@ -182,6 +182,38 @@ export type Database = {
         };
         Relationships: [];
       };
+      articles: {
+        Row: {
+          id: number;
+          title: string;
+          url: string;
+          summary: string | null;
+          image_url: string | null;
+          source: string;
+          published_at: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          title: string;
+          url: string;
+          summary?: string | null;
+          image_url?: string | null;
+          source: string;
+          published_at: string;
+          status?: string;
+        };
+        Update: {
+          title?: string;
+          url?: string;
+          summary?: string | null;
+          image_url?: string | null;
+          source?: string;
+          published_at?: string;
+          status?: string;
+        };
+        Relationships: [];
+      };
       subscribers: {
         Row: {
           id: string;
@@ -213,6 +245,7 @@ export type Category = Database["public"]["Tables"]["categories"]["Row"];
 export type Tag = Database["public"]["Tables"]["tags"]["Row"];
 export type Comment = Database["public"]["Tables"]["comments"]["Row"];
 export type Like = Database["public"]["Tables"]["likes"]["Row"];
+export type Article = Database["public"]["Tables"]["articles"]["Row"];
 
 export type PostWithAuthor = Post & {
   profiles: Pick<Profile, "id" | "name" | "username" | "avatar_url">;
