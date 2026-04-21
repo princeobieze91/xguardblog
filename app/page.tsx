@@ -5,6 +5,7 @@ import { ArrowRight, Clock, Shield } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
 import Avatar from "@/components/ui/Avatar";
+import SubscribePopup from "@/components/layout/SubscribePopup";
 import type { PostWithAuthor } from "@/types/supabase";
 
 export const revalidate = 60;
@@ -44,6 +45,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
+      <SubscribePopup />
       {/* Hero */}
       <section className="py-24 px-4 text-center bg-gradient-to-b from-primary-50 dark:from-dark-950 to-white dark:to-dark-900">
         <div className="max-w-3xl mx-auto">
