@@ -53,3 +53,7 @@ export function sanitizeHtml(html: string): string {
     .replace(/\b(href|src|action)\s*=\s*["']?\s*javascript\s*:/gi, 'href="#"')
     .replace(/<\/?(iframe|object|embed|base)\b[^>]*>/gi, "");
 }
+
+export function checkIsDashboard(pathname: string): boolean {
+  return pathname.startsWith("/dashboard") || pathname.startsWith("/login") || pathname.startsWith("/register");
+}

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import AppWrapper from "@/components/layout/AppWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -41,9 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <meta name="google-site-verification" content="p4HkfOy2U9rJ38jmTwlu_7LsfuMAzCS2NRUrUu25nio" />
       <meta name="msvalidate.01" content="DDAB268DF857BD4C287C440B48244FE1" />
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
-        <Navbar />
-        <main className="min-h-screen pt-16">{children}</main>
-        <Footer />
+        <AppWrapper>{children}</AppWrapper>
       </body>
     </html>
   );

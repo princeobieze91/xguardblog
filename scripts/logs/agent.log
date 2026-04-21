@@ -1,0 +1,13 @@
+[2026-04-21T15:08:51.142Z] [ERROR] Missing Supabase environment variables
+[2026-04-21T15:11:19.943Z] [ERROR] Missing Supabase environment variables
+[2026-04-21T15:13:45.910Z] [INFO] Starting article fetch process
+[2026-04-21T15:13:49.165Z] [INFO] Fetched 20 articles from TechCrunch
+[2026-04-21T15:13:52.255Z] [INFO] Fetched 20 articles from Wired
+[2026-04-21T15:13:55.135Z] [INFO] Fetched 10 articles from The Verge
+[2026-04-21T15:13:58.326Z] [INFO] Fetched 10 articles from MIT Technology Review
+[2026-04-21T15:14:00.816Z] [INFO] Fetched 20 articles from Ars Technica
+[2026-04-21T15:14:04.031Z] [INFO] Fetched 19 articles from NewsAPI
+[2026-04-21T15:14:04.033Z] [INFO] Total articles collected: 99
+[2026-04-21T15:14:07.679Z] [INFO] New articles to insert: 99
+[2026-04-21T15:14:08.913Z] [INFO] Successfully inserted 98 articles
+[2026-04-21T15:14:08.914Z] [INFO] Article fetch process completed
