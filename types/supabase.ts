@@ -182,6 +182,22 @@ export type Database = {
         };
         Relationships: [];
       };
+      subscribers: {
+        Row: {
+          id: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

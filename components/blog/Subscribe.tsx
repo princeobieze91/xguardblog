@@ -24,7 +24,7 @@ export default function Subscribe() {
     
     if (err) {
       if (err.message.includes("duplicate")) {
-        setError("You're already subscribed!");
+        setError("Already subscribed!");
       } else {
         setError(err.message);
       }
