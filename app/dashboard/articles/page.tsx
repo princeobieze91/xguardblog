@@ -1,21 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Check, X, ExternalLink, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Check, X, ExternalLink, Image as ImageIcon, Loader2, RefreshCw } from "lucide-react";
 import Image from "next/image";
-
-interface Article {
-  id: number;
-  title: string;
-  url: string;
-  summary: string | null;
-  image_url: string | null;
-  source: string;
-  published_at: string;
-  status: string;
-  created_at: string;
-}
+import { Article } from "@/types/supabase";
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -23,11 +12,7 @@ export default function ArticlesPage() {
   const [updating, setUpdating] = useState<number | null>(null);
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("articles")
@@ -39,7 +24,26 @@ export default function ArticlesPage() {
       setArticles(data);
     }
     setLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchArticles();
+
+    const channel = supabase
+      .channel('articles-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'articles' },
+        () => {
+          fetchArticles();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchArticles, supabase]);
 
   const updateStatus = async (id: number, newStatus: string) => {
     setUpdating(id);
@@ -78,7 +82,15 @@ export default function ArticlesPage() {
             Review and approve articles from external sources
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchArticles()}
+            disabled={loading}
+            className="p-2 rounded-lg bg-dark-100 dark:bg-dark-800 text-dark-600 dark:text-dark-400 hover:bg-dark-200 dark:hover:bg-dark-700 transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
           <span className="px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full text-sm font-medium">
             {pendingCount} Pending
           </span>

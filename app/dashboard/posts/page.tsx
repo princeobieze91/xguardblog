@@ -1,50 +1,108 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
-import { PenSquare, Trash2, Eye, EyeOff } from "lucide-react";
-
-interface Post { id: string; title: string; status: string; view_count: number; created_at: string; }
+import { PenSquare, Trash2, Eye, EyeOff, RefreshCw } from "lucide-react";
+interface PostItem {
+  id: string;
+  title: string;
+  status: "draft" | "published";
+  view_count: number;
+  created_at: string;
+  author_id: string;
+}
 
 export default function PostsPage() {
-  const [posts, setPosts]   = useState<Post[]>([]);
+  const [posts, setPosts]   = useState<PostItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast]   = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const supabase = createClient();
 
-  const load = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data } = await supabase.from("posts").select("id,title,status,view_count,created_at").eq("author_id", user!.id).order("created_at", { ascending: false });
+  const load = useCallback(async () => {
+    if (!userId) return;
+    setLoading(true);
+    const { data } = await supabase
+      .from("posts")
+      .select("id,title,status,view_count,created_at,author_id")
+      .eq("author_id", userId)
+      .order("created_at", { ascending: false });
     setPosts(data ?? []);
     setLoading(false);
-  };
+  }, [supabase, userId]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    init();
+  }, [supabase]);
 
-  const toggleStatus = async (post: Post) => {
+  useEffect(() => {
+    if (!userId) return;
+
+    load();
+
+    const channel = supabase
+      .channel('posts-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'posts' },
+        () => {
+          load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, load, supabase]);
+
+  const toggleStatus = async (post: PostItem) => {
     const newStatus = post.status === "published" ? "draft" : "published";
-    const { error } = await supabase.from("posts").update({ status: newStatus, published_at: newStatus === "published" ? new Date().toISOString() : null }).eq("id", post.id);
+    const { error } = await supabase
+      .from("posts")
+      .update({ 
+        status: newStatus, 
+        published_at: newStatus === "published" ? new Date().toISOString() : null 
+      })
+      .eq("id", post.id);
     if (error) { setToast({ message: error.message, type: "error" }); return; }
     setToast({ message: `Post ${newStatus === "published" ? "published" : "unpublished"}.`, type: "success" });
-    load();
+    setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: newStatus } : p));
   };
 
   const deletePost = async (id: string) => {
     if (!confirm("Delete this post permanently?")) return;
-    await supabase.from("posts").delete().eq("id", id);
+    const { error } = await supabase.from("posts").delete().eq("id", id);
+    if (error) { setToast({ message: error.message, type: "error" }); return; }
     setToast({ message: "Post deleted.", type: "success" });
-    load();
+    setPosts(prev => prev.filter(p => p.id !== id));
   };
 
   return (
     <div className="max-w-5xl mx-auto">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="section-title">My Posts</h1>
-        <Link href="/dashboard/posts/new"><Button size="sm"><PenSquare className="w-4 h-4" /> New Post</Button></Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => load()}
+            disabled={loading}
+            className="p-2 rounded-lg bg-dark-100 dark:bg-dark-800 text-dark-600 dark:text-dark-400 hover:bg-dark-200 dark:hover:bg-dark-700 transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <Link href="/dashboard/posts/new"><Button size="sm"><PenSquare className="w-4 h-4" /> New Post</Button></Link>
+        </div>
       </div>
 
       <div className="card overflow-hidden">
