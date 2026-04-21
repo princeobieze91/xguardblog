@@ -30,7 +30,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4 text-sm">Account</h4>
             <ul className="space-y-2 text-sm">
-              {[["Sign In", "/login"], ["Register", "/register"], ["Dashboard", "/dashboard"]].map(([label, href]) => (
+              {[["Blog", "/blog"], ["Dashboard", "/dashboard"]].map(([label, href]) => (
                 <li key={href}><Link href={href} className="text-dark-400 hover:text-primary-500 transition-colors">{label}</Link></li>
               ))}
             </ul>

@@ -118,10 +118,7 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <>
-                <Link href="/login"><Button variant="ghost" size="sm">Sign in</Button></Link>
-                <Link href="/register"><Button variant="primary" size="sm">Get Started</Button></Link>
-              </>
+              <Link href="/blog"><Button variant="primary" size="sm">Articles</Button></Link>
             )}
           </div>
 
@@ -154,8 +151,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setIsOpen(false)}><Button variant="secondary" fullWidth>Sign in</Button></Link>
-                  <Link href="/register" onClick={() => setIsOpen(false)}><Button variant="primary" fullWidth>Get Started</Button></Link>
+                  <Link href="/blog" onClick={() => setIsOpen(false)}><Button variant="primary" fullWidth>Articles</Button></Link>
                 </>
               )}
             </div>
