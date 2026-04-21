@@ -14,23 +14,16 @@ export const revalidate = 60;
 async function getLatestPosts(): Promise<PostWithAuthor[]> {
   const supabase = createClient();
   
-  // Get admin's posts first, then others
   const { data } = await supabase
     .from("posts")
     .select(
-      "*, profiles(id,name,username,avatar_url,role), categories(id,name,slug,color)",
+      "*, profiles(id,name,username,avatar_url), categories(id,name,slug,color)",
     )
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(9);
   
-  const posts = (data as PostWithAuthor[]) ?? [];
-  
-  // Sort: admin posts first, then by date
-  const adminPosts = posts.filter(p => p.profiles?.role === 'admin');
-  const otherPosts = posts.filter(p => p.profiles?.role !== 'admin');
-  
-  return [...adminPosts, ...otherPosts];
+  return (data as PostWithAuthor[]) ?? [];
 }
 
 export default async function BlogPage() {
