@@ -34,6 +34,7 @@ export default function RichEditor({ content, onChange, placeholder = "Start wri
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content, false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content]);
 
   if (!editor) return null;

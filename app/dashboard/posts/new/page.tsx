@@ -58,8 +58,8 @@ export default function NewPostPage() {
       .then(({ data }) => {
         if (data) setCategories(data);
       });
-  },
-    []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const save = async (status: "draft" | "published") => {
     if (!title.trim()) {

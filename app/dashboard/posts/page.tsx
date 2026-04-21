@@ -43,6 +43,7 @@ export default function PostsPage() {
       }
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase]);
 
   useEffect(() => {

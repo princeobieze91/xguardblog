@@ -27,6 +27,7 @@ export default function DashboardSidebar() {
       }
     };
     checkRole();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
