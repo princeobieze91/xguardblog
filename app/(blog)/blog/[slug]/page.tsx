@@ -14,7 +14,7 @@ interface PageProps {
   params: { slug: string };
 }
 
-async function getPost(slug: string) {
+async function getPost(slug: string): Promise<any> {
   const supabase = createClient();
   const { data: post, error } = await supabase
     .from("posts")
@@ -25,9 +25,15 @@ async function getPost(slug: string) {
   if (error || !post) return null;
   
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", post.author_id).single();
-  const { data: category } = await supabase.from("categories").select("*").eq("id", post.category_id).single();
+  const { data: category } = post.category_id 
+    ? await supabase.from("categories").select("*").eq("id", post.category_id).single()
+    : { data: null };
   
-  return { ...post, profiles: profile, categories: category };
+  return { 
+    ...post, 
+    profiles: profile || { id: "", name: "Unknown", username: "", avatar_url: null },
+    categories: category 
+  };
 }
 
 export async function generateMetadata({ params }: PageProps) {
