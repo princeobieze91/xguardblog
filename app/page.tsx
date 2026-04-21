@@ -9,17 +9,25 @@ import type { PostWithAuthor } from "@/types/supabase";
 
 export const revalidate = 60;
 
-async function getRecentPosts(): Promise<PostWithAuthor[]> {
+async function getRecentPosts() {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data: posts, error } = await supabase
     .from("posts")
-    .select(
-      "*, profiles(*), categories(*)",
-    )
+    .select("*")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(6);
-  return (data as PostWithAuthor[]) ?? [];
+  if (error) console.error("Posts error:", error);
+  if (!posts) return [];
+  
+  const { data: profiles } = await supabase.from("profiles").select("*");
+  const { data: categories } = await supabase.from("categories").select("*");
+  
+  return posts.map((post: any) => ({
+    ...post,
+    profiles: profiles?.find((p: any) => p.id === post.author_id) || { name: "Unknown" },
+    categories: categories?.find((c: any) => c.id === post.category_id) || null,
+  }));
 }
 
 export default async function HomePage() {

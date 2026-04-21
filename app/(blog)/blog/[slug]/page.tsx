@@ -14,15 +14,20 @@ interface PageProps {
   params: { slug: string };
 }
 
-async function getPost(slug: string): Promise<PostWithAuthor | null> {
+async function getPost(slug: string) {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data: post, error } = await supabase
     .from("posts")
-    .select("*, profiles(*), categories(*)")
+    .select("*")
     .eq("slug", slug)
     .eq("status", "published")
     .single();
-  return data as PostWithAuthor | null;
+  if (error || !post) return null;
+  
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", post.author_id).single();
+  const { data: category } = await supabase.from("categories").select("*").eq("id", post.category_id).single();
+  
+  return { ...post, profiles: profile, categories: category };
 }
 
 export async function generateMetadata({ params }: PageProps) {

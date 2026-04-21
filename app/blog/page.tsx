@@ -11,17 +11,26 @@ import Subscribe from "@/components/blog/Subscribe";
 
 export const revalidate = 60;
 
-async function getLatestPosts(): Promise<PostWithAuthor[]> {
+async function getLatestPosts() {
   const supabase = createClient();
   
-  const { data } = await supabase
+  const { data: posts, error } = await supabase
     .from("posts")
-    .select("*, profiles(*), categories(*)")
+    .select("*")
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(9);
+  if (error) console.error("Posts error:", error);
+  if (!posts) return [];
   
-  return (data as PostWithAuthor[]) ?? [];
+  const { data: profiles } = await supabase.from("profiles").select("*");
+  const { data: categories } = await supabase.from("categories").select("*");
+  
+  return posts.map((post: any) => ({
+    ...post,
+    profiles: profiles?.find((p: any) => p.id === post.author_id) || { name: "Unknown" },
+    categories: categories?.find((c: any) => c.id === post.category_id) || null,
+  }));
 }
 
 export default async function BlogPage() {
