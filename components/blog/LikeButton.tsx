@@ -16,8 +16,8 @@ function getGuestId() {
 }
 
 export default function LikeButton({ postId }: { postId: string }) {
-  const [liked, setLiked]   = useState(false);
-  const [count, setCount]   = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [count, setCount] = useState(0);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
@@ -29,10 +29,13 @@ export default function LikeButton({ postId }: { postId: string }) {
     supabase.from("likes").select("user_id", { count: "exact" }).eq("post_id", postId).then(({ count: c }) => setCount(c ?? 0));
     
     if (id) {
-      const { data } = supabase.from("likes").select("user_id").eq("post_id", postId).eq("user_id", id).maybeSingle();
-      data?.then(d => setLiked(!!d));
+      supabase.from("likes").select("user_id").eq("post_id", postId).eq("user_id", id).maybeSingle()
+        .then((res: unknown) => {
+          const d = res as { data?: { user_id: string } | null };
+          setLiked(!!d?.data);
+        });
     }
-  }, [postId]);
+  }, [postId, supabase]);
 
   const toggle = async () => {
     if (!guestId || loading) return;

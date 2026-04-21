@@ -39,8 +39,29 @@ export default function CommentsSection({ postId }: { postId: string }) {
     const id = getGuestId();
     setGuestId(id);
     setGuestName(getGuestName());
-    loadComments();
-  }, [postId]);
+    const load = async () => {
+      const { data } = await supabase
+        .from("comments")
+        .select("*, profiles(id,name,username,avatar_url)")
+        .eq("post_id", postId)
+        .is("parent_id", null)
+        .order("is_pinned", { ascending: false })
+        .order("created_at", { ascending: true });
+
+      const roots = (data as CommentWithAuthor[]) ?? [];
+      for (const root of roots) {
+        const { data: replies } = await supabase
+          .from("comments")
+          .select("*, profiles(id,name,username,avatar_url)")
+          .eq("post_id", postId)
+          .eq("parent_id", root.id)
+          .order("created_at", { ascending: true });
+        root.replies = (replies as CommentWithAuthor[]) ?? [];
+      }
+      setComments(roots);
+    };
+    load();
+  }, [postId, supabase]);
 
   const loadComments = async () => {
     const { data } = await supabase
