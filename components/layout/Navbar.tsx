@@ -47,7 +47,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: "Home",     href: "/" },
-    { label: "Articles", href: "/blog" },
+    { label: "Articles", href: "/articles" },
     { label: "About",    href: "/about" },
   ];
 
@@ -118,7 +118,7 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <Link href="/blog"><Button variant="primary" size="sm">Articles</Button></Link>
+              <Link href="/articles"><Button variant="primary" size="sm">Articles</Button></Link>
             )}
           </div>
 

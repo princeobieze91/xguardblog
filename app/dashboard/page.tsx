@@ -9,21 +9,20 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: posts }, { data: profile }] = await Promise.all([
+  const [{ data: allPosts }, { data: profile }] = await Promise.all([
     supabase
       .from("posts")
       .select("id,title,status,view_count,created_at,published_at")
-      .eq("author_id", user!.id)
-      .order("created_at", { ascending: false })
-      .limit(5),
+      .eq("author_id", user!.id),
     supabase.from("profiles").select("*").eq("id", user!.id).single(),
   ]);
 
   const isAdmin = profile?.role === "admin";
 
-  const totalViews = posts?.reduce((a, p) => a + (p.view_count ?? 0), 0) ?? 0;
-  const published = posts?.filter((p) => p.status === "published").length ?? 0;
-  const drafts = posts?.filter((p) => p.status === "draft").length ?? 0;
+  const posts = allPosts?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5) ?? [];
+  const totalViews = allPosts?.reduce((a, p) => a + (p.view_count ?? 0), 0) ?? 0;
+  const published = allPosts?.filter((p) => p.status === "published").length ?? 0;
+  const drafts = allPosts?.filter((p) => p.status === "draft").length ?? 0;
 
   const stats = [
     {
