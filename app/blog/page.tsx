@@ -14,7 +14,7 @@ export const revalidate = 60;
 async function getLatestPosts(): Promise<PostWithAuthor[]> {
   const supabase = createClient();
   
-  const { data: posts } = await supabase
+  const { data } = await supabase
     .from("posts")
     .select("*, profiles(*), categories(*)")
     .eq("status", "published")
