@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { CommentWithAuthor } from "@/types/supabase";
 import Avatar from "@/components/ui/Avatar";

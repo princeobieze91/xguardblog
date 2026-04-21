@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Check, Loader2 } from "lucide-react";
+import { Mail, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -41,7 +41,7 @@ export default function Subscribe() {
       <div className="bg-green-50 dark:bg-green-900/20 rounded-card p-6 text-center">
         <Check className="w-8 h-8 text-green-500 mx-auto mb-2" />
         <p className="text-green-700 dark:text-green-400 font-medium">Thanks for subscribing!</p>
-        <p className="text-sm text-green-600 dark:text-green-500">You'll get notified about new posts.</p>
+        <p className="text-sm text-green-600 dark:text-green-500">You will get notified about new posts.</p>
       </div>
     );
   }
