@@ -5,6 +5,7 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
       { protocol: "https", hostname: "images.pexels.com",   pathname: "/**" },
       { protocol: "https", hostname: "*.supabase.co",       pathname: "/**" },
+      { protocol: "https", hostname: "essorqboloappvfwjcbh.supabase.co",       pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos",       pathname: "/**" },
       { protocol: "https", hostname: "techcrunch.com",   pathname: "/**" },
       { protocol: "https", hostname: "*.techcrunch.com",  pathname: "/**" },
