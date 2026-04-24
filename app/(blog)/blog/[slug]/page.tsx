@@ -6,6 +6,7 @@ import Badge from "@/components/ui/Badge";
 import Avatar from "@/components/ui/Avatar";
 import CommentsSection from "@/components/blog/CommentsSection";
 import LikeButton from "@/components/blog/LikeButton";
+import ShareButton from "@/components/ui/ShareButton";
 import { Clock, Eye, Calendar } from "lucide-react";
 import type { PostWithAuthor } from "@/types/supabase";
 import Link from "next/link";
@@ -42,13 +43,58 @@ export async function generateMetadata({ params }: PageProps) {
   return {
     title: post.title,
     description: post.excerpt,
+    keywords: `${post.categories?.name}, blog, articles, ${post.title.split(' ').slice(0, 5).join(', ')}`,
     openGraph: {
       title: post.title,
       description: post.excerpt ?? "",
       images: post.cover_image ? [post.cover_image] : [],
+      siteName: "XGuard",
+      locale: "en_US",
+      type: "article",
+      publishedTime: post.published_at ?? post.created_at,
+      authors: [post.profiles.name],
+      tags: [post.categories?.name].filter(Boolean),
     },
-  };
-}
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: post.cover_image ? [post.cover_image] : [],
+      creator: "@xguardblog",
+    },
+    other: {
+      "article:published_time": post.published_at ?? post.created_at,
+      "article:author": post.profiles.name,
+      "article:section": post.categories?.name ?? "General",
+    },
+    // Structured data for rich snippets
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: post.excerpt,
+      image: post.cover_image ? [{ "@id": `${process.env.NEXT_PUBLIC_SITE_URL}${post.cover_image}` }] : [],
+      author: {
+        "@type": "Person",
+        name: post.profiles.name
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "XGuard",
+        logo: {
+          "@type": "ImageObject",
+          url: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`
+        }
+      },
+      datePublished: post.published_at ?? post.created_at,
+       dateModified: post.updated_at,
+       mainEntityOfPage: {
+         "@type": "WebPage",
+         "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`
+       }
+     }
+   };
+ }
 
 export default async function PostPage({ params }: PageProps) {
   const post = await getPost(params.slug);
@@ -107,7 +153,7 @@ export default async function PostPage({ params }: PageProps) {
         </div>
       </header>
 
-      {post.cover_image && (
+      {post.cover_image ? (
         <div className="relative w-full h-72 md:h-96 rounded-card overflow-hidden mb-10">
           <Image
             src={post.cover_image}
@@ -117,6 +163,10 @@ export default async function PostPage({ params }: PageProps) {
             priority
           />
         </div>
+      ) : (
+        <div className="relative w-full h-72 md:h-96 rounded-card overflow-hidden mb-10 flex items-center justify-center bg-gradient-to-r from-slate-100 to-slate-200">
+          <span className="text-sm text-slate-600">No image available</span>
+        </div>
       )}
 
       <div
@@ -124,9 +174,16 @@ export default async function PostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
       />
 
-      <div className="mt-10 pt-6 border-t border-dark-100 dark:border-dark-700">
-        <LikeButton postId={post.id} />
-      </div>
+       <div className="mt-10 pt-6 border-t border-dark-100 dark:border-dark-700">
+         <LikeButton postId={post.id} />
+       </div>
+       
+       <div className="mt-8">
+         <h3 className="text-lg font-semibold text-dark-900 dark:text-white mb-3">
+           Share this article
+         </h3>
+         <ShareButton title={post.title} url={`${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`} />
+       </div>
 
       <div className="mt-10">
         <CommentsSection postId={post.id} />

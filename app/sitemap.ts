@@ -1,7 +1,24 @@
 import { MetadataRoute } from "next";
+import { createClient } from "@/lib/supabase/server";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://xguardblog.vercel.app";
+  
+  const supabase = createClient();
+  
+  // Fetch all published posts for dynamic sitemap
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("slug, updated_at, published_at")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+
+  const postUrls: MetadataRoute.Sitemap = (posts ?? []).map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.published_at ?? post.updated_at),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
 
   return [
     {
@@ -23,64 +40,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/blog/ai-driven-workflows-agentic-uis`,
-      lastModified: new Date("2026-01-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
+      url: `${baseUrl}/articles`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.7,
     },
     {
-      url: `${baseUrl}/blog/server-first-performance-rsc`,
-      lastModified: new Date("2026-02-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
+      url: `${baseUrl}/search`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
     },
-    {
-      url: `${baseUrl}/blog/on-device-ai-multimodal`,
-      lastModified: new Date("2026-03-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/nobody-knows-how-to-build-with-ai`,
-      lastModified: new Date("2026-04-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/mcp-design-to-code`,
-      lastModified: new Date("2026-05-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/end-of-dashboards-design-systems`,
-      lastModified: new Date("2026-06-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/edge-computing-defaults`,
-      lastModified: new Date("2026-07-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/legal-accessibility-mandates`,
-      lastModified: new Date("2026-08-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/fine-tuning-serverless-gpus`,
-      lastModified: new Date("2026-09-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog/rise-of-green-coding`,
-      lastModified: new Date("2026-10-15"),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
+    ...postUrls,
   ];
 }

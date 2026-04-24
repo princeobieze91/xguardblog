@@ -70,14 +70,19 @@ export default async function BlogPage() {
           <h2 className="section-title mb-8">Featured</h2>
           <Link href={`/blog/${featured.slug}`}>
             <div className="card overflow-hidden md:flex group cursor-pointer">
-              {featured.cover_image && (
+              {featured.cover_image ? (
                 <div className="relative md:w-1/2 h-64 md:h-auto">
                   <Image
                     src={featured.cover_image}
                     alt={featured.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    priority
                   />
+                </div>
+              ) : (
+                <div className="relative md:w-1/2 h-64 md:h-auto bg-gradient-to-br from-primary-100 to-rose-100 dark:from-primary-900/30 dark:to-rose-900/30 flex items-center justify-center">
+                  <span className="text-4xl font-bold text-primary-300 dark:text-primary-700">No Image</span>
                 </div>
               )}
               <div className="p-8 md:w-1/2 flex flex-col justify-center">
@@ -175,7 +180,7 @@ function PostCard({ post }: { post: PostWithAuthor }) {
   return (
     <Link href={`/blog/${post.slug}`}>
       <div className="card overflow-hidden group h-full flex flex-col cursor-pointer">
-        {post.cover_image && (
+        {post.cover_image ? (
           <div className="relative h-48 overflow-hidden">
             <Image
               src={post.cover_image}
@@ -183,6 +188,10 @@ function PostCard({ post }: { post: PostWithAuthor }) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
+          </div>
+        ) : (
+          <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary-100 to-rose-100 dark:from-primary-900/30 dark:to-rose-900/30 flex items-center justify-center">
+            <span className="text-lg font-semibold text-primary-400 dark:text-primary-600">No Image</span>
           </div>
         )}
         <div className="p-5 flex flex-col flex-1">

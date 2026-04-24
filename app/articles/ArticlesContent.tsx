@@ -150,7 +150,7 @@ export default function ArticlesContent() {
                         unoptimized
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-rose-100 dark:from-primary-900/30 dark:to-rose-900/30">
                         <ImageIcon className="w-12 h-12 text-dark-300 dark:text-dark-600" />
                       </div>
                     )}

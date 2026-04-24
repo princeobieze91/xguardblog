@@ -41,7 +41,7 @@ export default function DashboardSidebar() {
       { icon: PenSquare, label: "Write", href: "/dashboard/posts/new" },
       { icon: Newspaper, label: "Articles", href: "/dashboard/articles" }
     ] : []),
-    { icon: Settings,        label: "Settings", href: "/dashboard/settings" },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
 
   const handleLogout = async () => {

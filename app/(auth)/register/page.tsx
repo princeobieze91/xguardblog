@@ -27,10 +27,13 @@ export default function RegisterPage() {
     if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
     setLoading(true);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-    });
+     const { data, error: signUpError } = await supabase.auth.signUp({
+       email: form.email,
+       password: form.password,
+       options: {
+         emailRedirectTo: `${window.location.origin}/verify-email`
+       }
+     });
 
     if (signUpError) { setError(signUpError.message); setLoading(false); return; }
     if (!data.user)  { setError("Something went wrong. Please try again."); setLoading(false); return; }

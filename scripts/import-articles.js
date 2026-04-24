@@ -1,10 +1,14 @@
-const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
-const path = require('path');
+import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const supabase = createClient(
   'https://essorqboloappvfwjcbh.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzc29ycWJvbG9hcHB2ZndqY2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1ODg3OTYsImV4cCI6MjA5MjE2NDc5Nn0.Ha3w6lySP5vKbvvzwW0LD6i8eXK2-TBPfEbZ2PYD4aU'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzc29ycWJvbG9hcHB2ZndqY2JoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjU4ODc5NiwiZXhwIjoyMDkyMTY0Nzk2fQ.zKmF2iMXwLI7NDN94Sg5pau8f8jFJC7UiMT4RpoxL5A'
 );
 
 const articles = [

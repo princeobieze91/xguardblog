@@ -125,8 +125,8 @@ export default function ArticlesPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ImageIcon className="w-8 h-8 text-dark-300 dark:text-dark-600" />
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                    <ImageIcon className="w-6 h-6 text-slate-600" />
                   </div>
                 )}
               </div>
