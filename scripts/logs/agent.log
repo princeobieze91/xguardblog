@@ -11,3 +11,32 @@
 [2026-04-21T15:14:07.679Z] [INFO] New articles to insert: 99
 [2026-04-21T15:14:08.913Z] [INFO] Successfully inserted 98 articles
 [2026-04-21T15:14:08.914Z] [INFO] Article fetch process completed
+[2026-04-24T04:05:09.541Z] [INFO] Starting article fetch process
+[2026-04-24T04:05:10.424Z] [INFO] Fetched 20 articles from TechCrunch
+[2026-04-24T04:05:13.093Z] [INFO] Fetched 20 articles from Wired
+[2026-04-24T04:05:14.017Z] [INFO] Fetched 10 articles from The Verge
+[2026-04-24T04:05:14.906Z] [INFO] Fetched 10 articles from MIT Technology Review
+[2026-04-24T04:05:16.235Z] [INFO] Fetched 20 articles from Ars Technica
+[2026-04-24T04:05:17.049Z] [INFO] Fetched 19 articles from NewsAPI
+[2026-04-24T04:05:17.051Z] [INFO] Total articles collected: 99
+[2026-04-24T04:05:17.813Z] [INFO] New articles to insert: 99
+[2026-04-24T04:05:18.692Z] [INFO] Successfully inserted 99 articles
+[2026-04-24T04:05:18.695Z] [INFO] Article fetch process completed
+[2026-04-24T04:11:48.580Z] [INFO] Starting article fetch process
+[2026-04-24T04:11:49.781Z] [INFO] Fetched 10 articles from The Verge
+[2026-04-24T04:11:52.139Z] [ERROR] Failed to fetch RSS feed from 9to5Mac {"errno":-4078,"code":"ECONNREFUSED","syscall":"connect","address":"192.0.66.2","port":443}
+[2026-04-24T04:11:54.676Z] [ERROR] Failed to fetch RSS feed from 9to5google {"errno":-4078,"code":"ECONNREFUSED","syscall":"connect","address":"192.0.66.2","port":443}
+[2026-04-24T04:11:55.720Z] [INFO] Fetched 20 articles from MacRumors
+[2026-04-24T04:11:57.743Z] [INFO] Fetched 10 articles from The Next Web
+[2026-04-24T04:11:59.683Z] [INFO] Fetched 30 articles from Engadget
+[2026-04-24T04:12:01.216Z] [INFO] Fetched 25 articles from CNET
+[2026-04-24T04:12:02.187Z] [ERROR] Failed to fetch RSS feed from Digital Trends {}
+[2026-04-24T04:12:04.529Z] [INFO] Fetched 30 articles from TechRadar
+[2026-04-24T04:12:05.525Z] [ERROR] Failed to fetch RSS feed from Videocardz {}
+[2026-04-24T04:12:06.581Z] [INFO] Fetched 20 articles from Gematsu
+[2026-04-24T04:12:07.379Z] [INFO] Fetched 19 articles from NewsAPI
+[2026-04-24T04:12:07.381Z] [INFO] Total articles collected: 164
+[2026-04-24T04:12:18.147Z] [ERROR] Failed to check existing URLs {"message":"TypeError: fetch failed","details":"TypeError: fetch failed\n\nCaused by: HeadersOverflowError: Headers Overflow Error (UND_ERR_HEADERS_OVERFLOW)\nHeadersOverflowError: Headers Overflow Error\n    at Parser.trackHeader (node:internal/deps/undici/undici:6062:37)\n    at Parser.onHeaderValue (node:internal/deps/undici/undici:6057:14)\n    at wasm_on_header_value (node:internal/deps/undici/undici:5852:34)\n    at wasm://wasm/0002f80e:wasm-function[42]:0x850a\n    at wasm://wasm/0002f80e:wasm-function[20]:0x7c38\n    at Parser.execute (node:internal/deps/undici/undici:5978:26)\n    at Parser.readMore (node:internal/deps/undici/undici:5957:16)\n    at TLSSocket.<anonymous> (node:internal/deps/undici/undici:6285:18)\n    at TLSSocket.emit (node:events:524:28)\n    at emitReadable_ (node:internal/streams/readable:834:12)","hint":"HTTP headers exceeded server limits (typically 16KB). Your request URL is 19724 characters. If selecting many fields, consider using views. If filtering with large arrays (e.g., .in('id', [200+ IDs])), consider using an RPC function instead.","code":""}
+[2026-04-24T04:12:18.148Z] [INFO] New articles to insert: 164
+[2026-04-24T04:12:19.366Z] [INFO] Successfully inserted 132 articles
+[2026-04-24T04:12:19.367Z] [INFO] Article fetch process completed

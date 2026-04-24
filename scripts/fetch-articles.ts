@@ -20,11 +20,17 @@ interface Article {
 const parser = new Parser();
 
 const RSS_FEEDS = [
-  { name: 'TechCrunch', url: 'https://techcrunch.com/feed/' },
-  { name: 'Wired', url: 'https://www.wired.com/feed/rss' },
   { name: 'The Verge', url: 'https://www.theverge.com/rss/index.xml' },
-  { name: 'MIT Technology Review', url: 'https://www.technologyreview.com/feed/' },
-  { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index' },
+  { name: '9to5Mac', url: 'https://9to5mac.com/feed' },
+  { name: '9to5google', url: 'https://9to5google.com/feed' },
+  { name: 'MacRumors', url: 'https://feeds.macrumors.com/MacRumors-All' },
+  { name: 'The Next Web', url: 'https://www.thenextweb.com/feed/' },
+  { name: 'Engadget', url: 'https://www.engadget.com/rss.xml' },
+  { name: 'CNET', url: 'https://www.cnet.com/rss/news/' },
+  { name: 'Digital Trends', url: 'https://www.digitaltrends.com/rss/tech-news/feed' },
+  { name: 'TechRadar', url: 'https://www.techradar.com/rss' },
+  { name: 'Videocardz', url: 'https://videocardz.com/feed' },
+  { name: 'Gematsu', url: 'https://www.gematsu.com/feed' },
 ];
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -41,20 +47,31 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function fetchRssFeed(name: string, url: string): Promise<Article[]> {
   try {
     const feed = await parser.parseURL(url);
-    const articles: Article[] = (feed.items || []).slice(0, 20).map((item) => {
+    const articles: Article[] = (feed.items || []).slice(0, 30).map((item) => {
       let imageUrl: string | null = null;
       
-      if (item.enclosure?.url) {
+      if (item.enclosure?.url && item.enclosure?.type?.startsWith('image')) {
         imageUrl = item.enclosure.url;
       } else if (item['media:content']?.$) {
         imageUrl = item['media:content'].$.url;
       } else if (item['media:thumbnail']?.$) {
         imageUrl = item['media:thumbnail'].$.url;
-      } else {
-        const contentMatch = item.content?.match(/<img[^>]+src="([^">]+)"/);
-        if (contentMatch) {
-          imageUrl = contentMatch[1];
-        }
+      } else if (item['content:encoded']) {
+        const contentMatch = item['content:encoded'].match(/<img[^>]+src="([^">]+)"/);
+        if (contentMatch) imageUrl = contentMatch[1];
+      } else if (item.content) {
+        const contentMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
+        if (contentMatch) imageUrl = contentMatch[1];
+      } else if (item.summary) {
+        const summaryMatch = item.summary.match(/<img[^>]+src="([^">]+)"/);
+        if (summaryMatch) imageUrl = summaryMatch[1];
+      }
+      
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = null;
+      }
+      if (imageUrl && (imageUrl.includes('pixel') || imageUrl.includes('1x1') || imageUrl.includes('tracking'))) {
+        imageUrl = null;
       }
 
       return {
