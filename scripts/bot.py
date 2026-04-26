@@ -163,6 +163,66 @@ class TrendBot:
         
         return rates
 
+    def fetch_freecodecamp(self) -> list:
+        """Fetch articles from freeCodeCamp RSS feed"""
+        articles = []
+        rss_url = "https://www.freecodecamp.org/news/rss/"
+        
+        try:
+            resp = self.session.get(rss_url, timeout=30).text
+            
+            # Parse RSS XML
+            items = resp.split("<item>")[1:11]  # Latest 10
+            
+            for item in items:
+                # Extract title
+                title_match = re.search(r"<title><!\[CDATA\[(.*?)\]\]></title>", item)
+                if not title_match:
+                    title_match = re.search(r"<title>(.*?)</title>", item)
+                
+                # Extract link
+                link_match = re.search(r"<link>(.*?)</link>", item)
+                
+                # Extract description/snippet
+                desc_match = re.search(r"<description><!\[CDATA\[(.*?)\]\]></description>", item)
+                if not desc_match:
+                    desc_match = re.search(r"<description>(.*?)</description>", item)
+                
+                # Extract content:encoded if available
+                content_match = re.search(r"<content:encoded><!\[CDATA\[(.*?)\]\]></content:encoded>", item)
+                
+                if title_match and link_match:
+                    title = title_match.group(1).strip()
+                    link = link_match.group(1).strip()
+                    
+                    # Get snippet from description or content
+                    snippet = ""
+                    if content_match:
+                        # Strip HTML tags from content
+                        snippet = re.sub(r"<[^>]+>", "", content_match.group(1))
+                        snippet = snippet.strip()[:300]
+                    elif desc_match:
+                        snippet = re.sub(r"<[^>]+>", "", desc_match.group(1))
+                        snippet = snippet.strip()[:300]
+                    
+                    if link.startswith("http") and not self.is_duplicate(link):
+                        articles.append({
+                            "title": title,
+                            "url": link,
+                            "summary": snippet or f"Learn more from freeCodeCamp",
+                            "pubDate": datetime.now().isoformat(),
+                            "source": "freeCodeCamp",
+                            "category": "technology"
+                        })
+                        logger.info(f"Found FCC: {title[:50]}")
+            
+            logger.info(f"Fetched {len(articles)} freeCodeCamp articles")
+            
+        except Exception as e:
+            logger.error(f"freeCodeCamp RSS error: {e}")
+        
+        return articles
+
     # ======================
     # AI CONTENT GENERATION
     # ======================
@@ -328,6 +388,7 @@ Return as JSON: {{"title": "...", "excerpt": "...", "content": "..."}}"""
         # Step 1: Fetch
         articles = self.fetch_european_news()
         articles.extend(self.fetch_fx_rates())
+        articles.extend(self.fetch_freecodecamp())
         
         logger.info(f"Processing {len(articles)} articles")
         
