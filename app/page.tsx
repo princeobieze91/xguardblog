@@ -63,10 +63,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Post */}
+      {/* Latest Post */}
       {featured && (
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-          <h2 className="section-title mb-6 md:mb-8">Featured</h2>
+          <h2 className="section-title mb-6 md:mb-8">Latest</h2>
           <Link href={`/blog/${featured.slug}`}>
             <div className="card overflow-hidden md:flex group cursor-pointer">
               {featured.cover_image ? (
