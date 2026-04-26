@@ -57,6 +57,10 @@ export type Database = {
           created_at: string;
           updated_at: string;
           published_at: string | null;
+          // Auto-bot fields
+          url: string | null;
+          blogger_post_id: string | null;
+          source: string | null;
         };
         Insert: {
           title: string;
@@ -69,6 +73,9 @@ export type Database = {
           category_id?: string | null;
           read_time?: number;
           published_at?: string | null;
+          url?: string | null;
+          blogger_post_id?: string | null;
+          source?: string | null;
         };
         Update: {
           title?: string;
@@ -82,6 +89,9 @@ export type Database = {
           view_count?: number;
           read_time?: number;
           published_at?: string | null;
+          url?: string | null;
+          blogger_post_id?: string | null;
+          source?: string | null;
         };
         Relationships: [];
       };

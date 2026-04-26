@@ -86,12 +86,12 @@ export async function generateMetadata({ params }: PageProps) {
           url: `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`
         }
       },
-      datePublished: post.published_at ?? post.created_at,
-       dateModified: post.updated_at,
-       mainEntityOfPage: {
-         "@type": "WebPage",
-         "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`
-       }
+datePublished: post.published_at ?? post.created_at,
+      dateModified: post.updated_at,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`
+      }
      }
    };
  }

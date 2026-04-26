@@ -5,12 +5,12 @@ import { createClient } from "@/lib/supabase/client";
 import { redirect } from "next/navigation";
 import { 
   Settings, Users, FolderOpen, Database, Shield, 
-  Edit, Trash2, Plus, Save, Loader2, CheckCircle, AlertCircle 
+  Edit, Trash2, Plus, Save, Loader2, CheckCircle, AlertCircle, Zap
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
-type Tab = "general" | "categories" | "users" | "stats";
+type Tab = "general" | "categories" | "users" | "stats" | "bot";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("general");
@@ -111,6 +111,7 @@ export default function SettingsPage() {
     { id: "categories", label: "Categories", icon: FolderOpen },
     { id: "users", label: "Users", icon: Users },
     { id: "stats", label: "Statistics", icon: Database },
+    { id: "bot", label: "Trend Bot", icon: Zap },
   ];
 
   return (
@@ -362,6 +363,43 @@ export default function SettingsPage() {
                 <p className="font-medium text-green-700 dark:text-green-400">Storage Ready</p>
                 <p className="text-sm text-green-600 dark:text-green-500">Image uploads available</p>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bot Tab */}
+      {activeTab === "bot" && (
+        <div className="space-y-6">
+          <div className="card p-6">
+            <h2 className="text-lg font-bold text-dark-900 dark:text-white mb-2">XGuard Trend Bot</h2>
+            <p className="text-dark-500 text-sm mb-4">Automated content from European tech sources, FX markets, and AI generation.</p>
+            
+            <div className="bg-dark-50 dark:bg-dark-800 p-4 rounded-lg mb-4">
+              <h3 className="font-medium mb-2">Data Sources</h3>
+              <ul className="text-sm text-dark-500 space-y-1">
+                <li>- NewsData.io (European tech/business)</li>
+                <li>- Alpha Vantage (FX rates)</li>
+                <li>- RSS: ENISA, Tech.eu, EU-Startups</li>
+                <li>- Google Gemini (AI content generation)</li>
+              </ul>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <Button onClick={async () => {
+                setSaving(true);
+                try {
+                  const response = await fetch("/api/trigger-bot", { method: "POST" });
+                  const data = await response.json();
+                  setMessage({ type: response.ok ? "success" : "error", text: data.message || data.error });
+                } catch (e: any) {
+                  setMessage({ type: "error", text: e.message });
+                }
+                setSaving(false);
+              }} disabled={saving}>
+                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
+                Run Bot Now
+              </Button>
             </div>
           </div>
         </div>
