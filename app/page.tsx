@@ -1,23 +1,25 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Clock, Shield } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { ArrowRight, Clock, Eye } from "lucide-react";
+import { formatDate, truncate } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
 import Avatar from "@/components/ui/Avatar";
+import Subscribe from "@/components/blog/Subscribe";
 import SubscribePopup from "@/components/layout/SubscribePopup";
 import type { PostWithAuthor } from "@/types/supabase";
 
 export const revalidate = 60;
 
-async function getRecentPosts() {
+async function getLatestPosts() {
   const supabase = createClient();
+  
   const { data: posts, error } = await supabase
     .from("posts")
     .select("*")
     .eq("status", "published")
     .order("published_at", { ascending: false })
-    .limit(6);
+    .limit(10);
   if (error) console.error("Posts error:", error);
   if (!posts) return [];
   
@@ -41,51 +43,99 @@ export default async function HomePage() {
     isAdmin = profile?.role === "admin";
   }
   
-  const posts = await getRecentPosts();
+  const posts = await getLatestPosts();
+  const featured = posts[0];
+  const rest = posts.slice(1);
 
   return (
     <div className="min-h-screen">
       <SubscribePopup />
-      {/* Hero */}
-      <section className="py-24 px-4 text-center bg-gradient-to-b from-primary-50 dark:from-dark-950 to-white dark:to-dark-900">
+      
+      {/* Blog Header */}
+      <section className="py-12 md:py-16 px-4 text-center border-b border-dark-100 dark:border-dark-800">
         <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Shield className="w-10 h-10 text-primary-500" />
-            <span className="text-3xl font-bold font-display bg-gradient-to-r from-primary-500 to-rose-500 bg-clip-text text-transparent">
-              XGuard
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-display text-dark-900 dark:text-white leading-tight mb-6">
-            Ideas worth{" "}
-            <span className="bg-gradient-to-r from-primary-500 to-rose-500 bg-clip-text text-transparent">
-              sharing
-            </span>
+          <h1 className="text-3xl md:text-4xl font-bold font-display text-dark-900 dark:text-white mb-3">
+            XGuard Blog
           </h1>
-          <p className="text-lg text-dark-500 dark:text-dark-400 mb-8 max-w-xl mx-auto">
-            Discover insightful articles on development, design, and technology
-            — written by people who care.
+          <p className="text-dark-500 dark:text-dark-400">
+            Insights on development, design, and technology.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/blog"
-              className="btn-primary inline-flex items-center gap-2"
-            >
-              Browse Articles <ArrowRight className="w-4 h-4" />
-            </Link>
-            {isAdmin && (
-              <Link href="/dashboard/posts/new" className="btn-secondary">
-                Write Post
-              </Link>
-            )}
-          </div>
         </div>
       </section>
 
-      {/* Recent Posts */}
-      {posts.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="section-title">Recent Articles</h2>
+      {/* Featured Post */}
+      {featured && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <h2 className="section-title mb-6 md:mb-8">Featured</h2>
+          <Link href={`/blog/${featured.slug}`}>
+            <div className="card overflow-hidden md:flex group cursor-pointer">
+              {featured.cover_image ? (
+                <div className="relative md:w-1/2 h-56 md:h-72 lg:h-80">
+                  <Image
+                    src={featured.cover_image}
+                    alt={featured.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    priority
+                  />
+                </div>
+              ) : (
+                <div className="relative md:w-1/2 h-56 md:h-72 lg:h-80 bg-gradient-to-br from-primary-100 to-rose-100 dark:from-primary-900/30 dark:to-rose-900/30 flex items-center justify-center">
+                  <span className="text-3xl font-bold text-primary-300 dark:text-primary-700">No Image</span>
+                </div>
+              )}
+              <div className="p-6 md:p-8 md:w-1/2 flex flex-col justify-center">
+                {featured.categories && (
+                  <Badge
+                    variant="custom"
+                    color={featured.categories.color}
+                    className="mb-3 w-fit"
+                  >
+                    {featured.categories.name}
+                  </Badge>
+                )}
+                <h3 className="text-xl md:text-2xl font-bold font-display text-dark-900 dark:text-white mb-3 group-hover:text-primary-500 transition-colors">
+                  {featured.title}
+                </h3>
+                <p className="text-dark-500 dark:text-dark-400 mb-4 text-sm md:text-base line-clamp-3">
+                  {truncate(featured.excerpt ?? "", 180)}
+                </p>
+                <div className="flex items-center gap-4 mt-auto">
+                  <Avatar
+                    name={featured.profiles.name}
+                    src={featured.profiles.avatar_url}
+                    size="sm"
+                  />
+                  <div className="text-sm">
+                    <p className="font-medium text-dark-900 dark:text-white">
+                      {featured.profiles.name}
+                    </p>
+                    <p className="text-dark-400 text-xs">
+                      {formatDate(featured.published_at ?? featured.created_at)}
+                    </p>
+                  </div>
+                  <div className="ml-auto flex items-center gap-3 text-xs text-dark-400">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {featured.read_time}m
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      {featured.view_count}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
+
+      {/* Latest Posts Grid */}
+      {rest.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="flex items-center justify-between mb-6 md:mb-8">
+            <h2 className="section-title">Latest Articles</h2>
             <Link
               href="/blog"
               className="text-primary-500 text-sm font-medium hover:underline flex items-center gap-1"
@@ -94,57 +144,8 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`}>
-                <div className="card overflow-hidden group h-full flex flex-col cursor-pointer">
-                  {post.cover_image && (
-                    <div className="relative h-48 overflow-hidden">
-                      <Image
-                        src={post.cover_image}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-                  <div className="p-5 flex flex-col flex-1">
-                    {post.categories && (
-                      <Badge
-                        variant="custom"
-                        color={post.categories.color}
-                        className="mb-2 w-fit text-xs"
-                      >
-                        {post.categories.name}
-                      </Badge>
-                    )}
-                    <h3 className="font-bold font-display text-dark-900 dark:text-white mb-2 group-hover:text-primary-500 transition-colors line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm text-dark-500 dark:text-dark-400 line-clamp-2 flex-1">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center gap-3 mt-4 pt-4 border-t border-dark-100 dark:border-dark-700">
-                      <Avatar
-                        name={post.profiles.name}
-                        src={post.profiles.avatar_url}
-                        size="sm"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-dark-900 dark:text-white truncate">
-                          {post.profiles.name}
-                        </p>
-                        <p className="text-xs text-dark-400">
-                          {formatDate(post.published_at ?? post.created_at)}
-                        </p>
-                      </div>
-                      <span className="text-xs text-dark-400 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {post.read_time}m
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+            {rest.slice(0, 6).map((post) => (
+              <PostCard key={post.id} post={post} />
             ))}
           </div>
         </section>
@@ -164,6 +165,77 @@ export default async function HomePage() {
           </Link>
         </div>
       )}
+
+      {isAdmin && (
+        <div className="text-center pb-8">
+          <Link href="/dashboard/posts/new" className="btn-primary inline-flex">
+            Write New Post
+          </Link>
+        </div>
+      )}
+
+      <section className="max-w-3xl mx-auto px-4 py-12 border-t border-dark-100 dark:border-dark-800">
+        <Subscribe />
+      </section>
     </div>
+  );
+}
+
+function PostCard({ post }: { post: PostWithAuthor }) {
+  return (
+    <Link href={`/blog/${post.slug}`}>
+      <div className="card overflow-hidden group h-full flex flex-col cursor-pointer">
+        {post.cover_image ? (
+          <div className="relative h-44 md:h-48 overflow-hidden">
+            <Image
+              src={post.cover_image}
+              alt={post.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        ) : (
+          <div className="relative h-44 md:h-48 overflow-hidden bg-gradient-to-br from-primary-100 to-rose-100 dark:from-primary-900/30 dark:to-rose-900/30 flex items-center justify-center">
+            <span className="text-lg font-semibold text-primary-400 dark:text-primary-600">No Image</span>
+          </div>
+        )}
+        <div className="p-5 flex flex-col flex-1">
+          {post.categories && (
+            <Badge
+              variant="custom"
+              color={post.categories.color}
+              className="mb-2 w-fit text-xs"
+            >
+              {post.categories.name}
+            </Badge>
+          )}
+          <h3 className="font-bold font-display text-dark-900 dark:text-white mb-2 group-hover:text-primary-500 transition-colors line-clamp-2">
+            {post.title}
+          </h3>
+          <p className="text-sm text-dark-500 dark:text-dark-400 line-clamp-2 flex-1">
+            {post.excerpt}
+          </p>
+          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-dark-100 dark:border-dark-700">
+            <Avatar
+              name={post.profiles.name}
+              src={post.profiles.avatar_url}
+              size="sm"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-dark-900 dark:text-white truncate">
+                {post.profiles.name}
+              </p>
+              <p className="text-xs text-dark-400">
+                {formatDate(post.published_at ?? post.created_at)}
+              </p>
+            </div>
+            <span className="text-xs text-dark-400 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {post.read_time}m
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
